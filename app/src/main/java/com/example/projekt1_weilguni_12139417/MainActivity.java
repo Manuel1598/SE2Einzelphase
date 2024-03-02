@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
         matriculationEditText = findViewById(R.id.matriculationEditText);
         responseTextView = findViewById(R.id.responseTextView);
         Button sendButton = findViewById(R.id.sendButton);
+        Button calculateButton = findViewById(R.id.calculateButton);
+
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -36,6 +38,18 @@ public class MainActivity extends AppCompatActivity {
                 sendDataToServer(matriculationNumber);
             }
         });
+
+
+        calculateButton.setOnClickListener(new View.OnClickListener() { // Klicklistener für den "Calculate" Button
+            @Override
+            public void onClick(View v) {
+                String matriculationNumber = matriculationEditText.getText().toString();
+                String sortedMatriculation = MatriculationSorter.sortMatriculationNumber(matriculationNumber);
+                responseTextView.setText("Sortierte Matrikelnummer: " + sortedMatriculation);
+            }
+        });
+
+
     }
 
 
