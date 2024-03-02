@@ -27,23 +27,36 @@ public class MainActivity extends AppCompatActivity {
         Button calculateButton = findViewById(R.id.calculateButton);
 
 
+
+
         sendButton.setOnClickListener(v -> {
             String matriculationNumber = matriculationEditText.getText().toString();
 
-            new Thread(() -> {
-                String response = new TCPClient().sendData(matriculationNumber);
-                runOnUiThread(() -> displayResponse(response));
-            }).start();
+            if (isValidMatriculationNumber(matriculationNumber)) {
+                new Thread(() -> {
+                    String response = new TCPClient().sendData(matriculationNumber);
+                    runOnUiThread(() -> displayResponse(response));
+                }).start();
+            }
+            else {
+                displayErrorMessage();
+            }
+
         });
+
 
 
         calculateButton.setOnClickListener(v -> {
             String matriculationNumber = matriculationEditText.getText().toString();
-            String sortedMatriculation = MatriculationSorter.sortMatriculationNumber(matriculationNumber);
-            runOnUiThread(() -> responseTextView.setText("Sortierte Matrikelnummer: " + sortedMatriculation));
+            if (isValidMatriculationNumber(matriculationNumber)) {
+                String sortedMatriculation = MatriculationSorter.sortMatriculationNumber(matriculationNumber);
+                runOnUiThread(() -> responseTextView.setText("Sortierte Matrikelnummer: " + sortedMatriculation));
+            }
+            else {
+                displayErrorMessage();
+            }
         });
     }
-
 
 
 
@@ -57,4 +70,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    private boolean isValidMatriculationNumber(String matriculationNumber) {
+        int MATRICULATION_NUMBER_LENGTH = 8;
+        return matriculationNumber.length() == MATRICULATION_NUMBER_LENGTH;
+    }
+
+
+    @SuppressLint("SetTextI18n")
+    private void displayErrorMessage() {
+        responseTextView.setText("Matrikelnummer ist ungültig.");
+    }
 }
+
