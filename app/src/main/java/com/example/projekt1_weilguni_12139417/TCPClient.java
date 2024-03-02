@@ -21,10 +21,12 @@ public class TCPClient {
             socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
             outputStream = new DataOutputStream(socket.getOutputStream());
 
+            //Übergabe der Matrikelnumemer zum Server
             byte[] matriculationBytes = data.getBytes("UTF-8");
             outputStream.writeInt(matriculationBytes.length);
             outputStream.write(matriculationBytes);
 
+            //Lesen der Antwort vom Server
             inputStream = new DataInputStream(socket.getInputStream());
             int responseLength = inputStream.readInt();
             byte[] responseBytes = new byte[responseLength];
