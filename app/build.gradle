@@ -30,6 +30,11 @@ android {
 
 dependencies {
 
+    implementation group: 'io.reactivex.rxjava3', name: 'rxjava', version: '3.0.0'
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
+
+
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
