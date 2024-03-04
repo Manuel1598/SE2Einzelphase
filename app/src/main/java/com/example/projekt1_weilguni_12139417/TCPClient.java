@@ -1,44 +1,42 @@
 package com.example.projekt1_weilguni_12139417;
 
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 
 public class TCPClient {
 
-    private final String SERVER_ADDRESS = "se2-submission.aau.at";
-    private final int SERVER_PORT = 20080;
-
     public String sendData(String data) {
         Socket socket = null;
-        DataOutputStream outputStream = null;
-        DataInputStream inputStream = null;
+        BufferedWriter writer = null;
+        BufferedReader reader = null;
         String response = null;
 
         try {
+            String SERVER_ADDRESS = "se2-submission.aau.at";
+            int SERVER_PORT = 20080;
             socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-            outputStream = new DataOutputStream(socket.getOutputStream());
+            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-            //Übergabe der Matrikelnumemer zum Server
-            byte[] matriculationBytes = data.getBytes("UTF-8");
-            outputStream.writeInt(matriculationBytes.length);
-            outputStream.write(matriculationBytes);
+            // Send data to server
+            writer.write(data);
+            writer.newLine();
+            writer.flush();
 
-            //Lesen der Antwort vom Server
-            inputStream = new DataInputStream(socket.getInputStream());
-            int responseLength = inputStream.readInt();
-            byte[] responseBytes = new byte[responseLength];
-            inputStream.readFully(responseBytes);
-            response = new String(responseBytes, "UTF-8");
+            // Read response from server
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            response = reader.readLine();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
                 if (socket != null) socket.close();
-                if (outputStream != null) outputStream.close();
-                if (inputStream != null) inputStream.close();
+                if (writer != null) writer.close();
+                if (reader != null) reader.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
