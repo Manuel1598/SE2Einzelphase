@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(Throwable e) {
-                displayErrorMessage();
+                    displayServerErrorMessage();
             }
 
             @Override
@@ -56,9 +56,9 @@ public class MainActivity extends AppCompatActivity {
             String matriculationNumber = matriculationEditText.getText().toString();
             if (isValidMatriculationNumber(matriculationNumber)) {
                 if (disposable != null && !disposable.isDisposed()) {
-                    disposable.dispose(); // Dispose previous subscription
+                    disposable.dispose();
                 }
-                disposable = getImageNetworkCall(matriculationNumber)
+                disposable = getNetworkCall(matriculationNumber)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeWith(disposableObserver);
@@ -77,6 +77,15 @@ public class MainActivity extends AppCompatActivity {
                 displayErrorMessage();
             }
         });
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
     }
 
 
@@ -102,16 +111,22 @@ public class MainActivity extends AppCompatActivity {
         responseTextView.setText("Matrikelnummer ist ungültig.");
     }
 
-    private Observable<String> getImageNetworkCall(String matriculationNumber) {
+    @SuppressLint("SetTextI18n")
+    private void displayServerErrorMessage() {
+        responseTextView.setText("Server nicht erreichbar");
+    }
+
+    private Observable<String> getNetworkCall(String matriculationNumber) {
         return Observable.create(subscriber -> {
             String response = new TCPClient().sendData(matriculationNumber);
             if (response != null) {
                 subscriber.onNext(response);
                 subscriber.onComplete();
             } else {
-                subscriber.onError(new Throwable("Keine Antwort vom Server erhalten."));
+                subscriber.onError(new Throwable());
             }
         });
     }
+
 }
 
