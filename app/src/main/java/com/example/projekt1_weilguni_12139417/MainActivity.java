@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.observers.DisposableObserver;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 
@@ -20,7 +19,6 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 public class MainActivity extends AppCompatActivity {
 
     private TextView responseTextView;
-    private DisposableObserver<String> disposableObserver;
     private Disposable disposable;
 
     @SuppressLint("SetTextI18n")
@@ -35,38 +33,19 @@ public class MainActivity extends AppCompatActivity {
         Button calculateButton = findViewById(R.id.calculateButton);
 
 
-        disposableObserver = new DisposableObserver<String>() {
-            @Override
-            public void onNext(String response) {
-                displayResponse(response);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                    displayServerErrorMessage();
-            }
-
-            @Override
-            public void onComplete() {
-                Toast.makeText(MainActivity.this, "Serveranfrage abgeschlossen", Toast.LENGTH_SHORT).show();
-            }
-        };
-
         sendButton.setOnClickListener(v -> {
             String matriculationNumber = matriculationEditText.getText().toString();
             if (isValidMatriculationNumber(matriculationNumber)) {
-                if (disposable != null && !disposable.isDisposed()) {
-                    disposable.dispose();
-                }
                 disposable = getNetworkCall(matriculationNumber)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeWith(disposableObserver);
+                        .subscribe(this::displayResponse,
+                                throwable -> displayServerErrorMessage(),
+                                () -> Toast.makeText(MainActivity.this, "Serveranfrage abgeschlossen", Toast.LENGTH_SHORT).show());
             } else {
                 displayErrorMessage();
             }
         });
-
 
         calculateButton.setOnClickListener(v -> {
             String matriculationNumber = matriculationEditText.getText().toString();
@@ -129,4 +108,3 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
-
