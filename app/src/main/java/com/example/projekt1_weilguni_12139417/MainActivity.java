@@ -36,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
         sendButton.setOnClickListener(v -> {
             String matriculationNumber = matriculationEditText.getText().toString();
             if (isValidMatriculationNumber(matriculationNumber)) {
+                if (disposable != null) {
+                    disposable.dispose();
+                }
                 disposable = getNetworkCall(matriculationNumber)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
