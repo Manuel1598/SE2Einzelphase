@@ -85,8 +85,17 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isValidMatriculationNumber(String matriculationNumber) {
         int MATRICULATION_NUMBER_LENGTH = 8;
-        return matriculationNumber.length() == MATRICULATION_NUMBER_LENGTH;
+
+        return ((matriculationNumber.length() == MATRICULATION_NUMBER_LENGTH) &&  firstNumberisValid(matriculationNumber));
     }
+
+
+
+    private boolean firstNumberisValid(String matriculationNumber){
+        int firstNumberofMatriculationNumber = Character.getNumericValue(matriculationNumber.charAt(0));
+        return ((firstNumberofMatriculationNumber >= 0) &&(firstNumberofMatriculationNumber < 7));
+    }
+
 
     @SuppressLint("SetTextI18n")
     private void displayErrorMessage() {
